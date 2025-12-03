@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FORTEX TRIDENZT V2</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #0a0a0a;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            padding: 20px;
+        }
+
+        .background-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+            filter: blur(8px) brightness(0.7);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: rgba(10, 10, 10, 0.85);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 
+                0 0 25px rgba(255, 255, 255, 0.4),
+                inset 0 0 20px rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            background: linear-gradient(45deg, #ffffff, #cccccc, #ffffff);
+            z-index: -1;
+            filter: blur(20px);
+            opacity: 0.2;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .title {
+            font-size: 32px;
+            font-weight: 900;
+            color: #ffffff;
+            text-shadow: 
+                0 0 10px #ffffff, 
+                0 0 20px #ffffff, 
+                0 0 30px #ffffff;
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: #dddddd;
+            margin-bottom: 5px;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+        }
+
+        .owner {
+            font-size: 14px;
+            color: #bbbbbb;
+            margin-bottom: 20px;
+        }
+
+        .owner a {
+            color: #ffffff;
+            text-decoration: none;
+            transition: all 0.3s;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+        }
+
+        .owner a:hover {
+            color: #ffffff;
+            text-shadow: 0 0 10px #ffffff;
+        }
+
+        .video-container {
+            width: 100%;
+            height: 200px;
+            margin-bottom: 25px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 
+                0 0 15px rgba(255, 255, 255, 0.5),
+                inset 0 0 10px rgba(255, 255, 255, 0.2);
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .video-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #dddddd;
+            font-size: 16px;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(30, 30, 30, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 16px;
+            transition: all 0.3s;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #ffffff;
+            box-shadow: 
+                0 0 10px rgba(255, 255, 255, 0.5),
+                inset 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .menu-group {
+            margin-bottom: 25px;
+        }
+
+        .menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            background: rgba(30, 30, 30, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .menu-header:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.6);
+        }
+
+        .menu-title {
+            font-size: 18px;
+            color: #dddddd;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+        }
+
+        .menu-toggle {
+            color: #ffffff;
+            font-size: 20px;
+            transition: transform 0.3s;
+        }
+
+        .menu-options {
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .menu-options::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .menu-options::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .menu-options::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+        }
+
+        .menu-option {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            background: rgba(30, 30, 30, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .menu-option:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .menu-option.selected {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: #ffffff;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        .option-radio {
+            margin-right: 10px;
+            accent-color: #ffffff;
+            transform: scale(1.2);
+        }
+
+        .option-label {
+            flex: 1;
+            color: #fff;
+            font-weight: 500;
+        }
+
+        .option-link {
+            color: #bbbbbb;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .option-link:hover {
+            color: #ffffff;
+            text-shadow: 0 0 5px #ffffff;
+        }
+
+        .send-button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, #ffffff, #dddddd);
+            border: none;
+            border-radius: 8px;
+            color: #000;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+        }
+
+        .send-button:hover {
+            background: linear-gradient(45deg, #dddddd, #ffffff);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.7);
+            transform: translateY(-2px);
+        }
+
+        .send-button:active {
+            transform: translateY(1px);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .success-message {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid rgba(0, 255, 0, 0.5);
+            border-radius: 8px;
+            color: #00ff00;
+            font-weight: 700;
+            display: none;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+            text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #dddddd;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+        }
+
+        .glow-text {
+            color: #ffffff;
+            text-shadow: 0 0 5px #ffffff, 0 0 10px #ffffff;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .audio-controls {
+            display: flex;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .audio-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            color: #dddddd;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .audio-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.7; }
+            50% { opacity: 1; }
+            100% { opacity: 0.7; }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes glow {
+            0% { text-shadow: 0 0 5px #ffffff, 0 0 10px #ffffff, 0 0 15px #ffffff; }
+            50% { text-shadow: 0 0 10px #ffffff, 0 0 20px #ffffff, 0 0 30px #ffffff; }
+            100% { text-shadow: 0 0 5px #ffffff, 0 0 10px #ffffff, 0 0 15px #ffffff; }
+        }
+
+        .glow {
+            animation: glow 3s infinite;
+        }
+
+        .menu-open .menu-toggle {
+            transform: rotate(180deg);
+        }
+
+        .menu-open .menu-options {
+            display: flex;
+        }
+    </style>
+</head>
+<body>
+    <video class="background-video" autoplay muted loop>
+        <source src="https://files.catbox.moe/lwrjn8.mp4" type="video/mp4">
+        Browser Anda tidak mendukung pemutaran video.
+    </video>
+    
+    <div class="container">
+        <div class="header">
+            <h1 class="title pulse">FORTEX TRIDENZT V2</h1>
+            <p class="subtitle">DitozzGalaxy</p>
+            <p class="owner"><a href="https://t.me/DitozzGalaxy" target="_blank">https://t.me/DitozzGalaxy</a></p>
+        </div>
+        
+        <div class="video-container">
+            <video id="foregroundVideo" autoplay muted loop>
+                <source src="https://files.catbox.moe/lwrjn8.mp4" type="video/mp4">
+                Browser Anda tidak mendukung pemutaran video.
+            </video>
+        </div>
+        
+        <div class="input-group">
+            <label class="input-label">Masukkan Nomor WhatsApp:</label>
+            <input type="text" class="input-field" id="phoneNumber" placeholder="62xxxx">
+        </div>
+        
+        <div class="menu-group">
+            <div class="menu-header" id="menuHeader">
+                <h3 class="menu-title">Pilih Menu Banned:</h3>
+                <span class="menu-toggle">▼</span>
+            </div>
+            <div class="menu-options" id="menuOptions">
+                <label class="menu-option">
+                    <input type="radio" name="banOption" class="option-radio" value="permanent">
+                    <span class="option-label">BANNED PERMANEN AKSES</span>
+                    <a href="https://www.mediafire.com/file/u1jwd3dy877qx4m/5_6073450460851739364.mp4/file" class="option-link" target="_blank"></a>
+                </label>
+                <label class="menu-option">
+                    <input type="radio" name="banOption" class="option-radio" value="spam">
+                    <span class="option-label">BANNED V1</span>
+                    <a href="https://t.me/DitozzGalaxy" class="option-link" target="_blank"></a>
+                </label>
+                <label class="menu-option">
+                    <input type="radio" name="banOption" class="option-radio" value="1day">
+                    <span class="option-label">BANNED V2</span>
+                    <a href="https://t.me/DitozzGalaxy" class="option-link" target="_blank"></a>
+                </label>
+            </div>
+        </div>
+        
+        <button class="send-button" id="sendButton">SEND BANNED</button>
+        
+        <div class="success-message" id="successMessage">
+            SUKSES TO SEND ✅
+        </div>
+        
+        <div class="audio-controls">
+            <button class="audio-btn" id="audioToggle">Hidupkan Suara</button>
+        </div>
+        
+        <div class="footer">
+            <p class="glow-text">Power By DitozzGalaxy</p>
+        </div>
+    </div>
+
+    <audio id="backgroundAudio" loop>
+        <source src="https://files.catbox.moe/r6154t.mp3" type="audio/mp3">
+        Browser Anda tidak mendukung pemutaran audio.
+    </audio>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuHeader = document.getElementById('menuHeader');
+            const menuOptions = document.getElementById('menuOptions');
+            const menuOptionItems = document.querySelectorAll('.menu-option');
+            const sendButton = document.getElementById('sendButton');
+            const successMessage = document.getElementById('successMessage');
+            const phoneInput = document.getElementById('phoneNumber');
+            const backgroundAudio = document.getElementById('backgroundAudio');
+            const audioToggle = document.getElementById('audioToggle');
+            
+            let audioEnabled = false;
+            let menuOpen = false;
+            
+            // Toggle menu dropdown
+            menuHeader.addEventListener('click', function() {
+                menuOpen = !menuOpen;
+                if (menuOpen) {
+                    menuHeader.parentElement.classList.add('menu-open');
+                } else {
+                    menuHeader.parentElement.classList.remove('menu-open');
+                }
+            });
+            
+            // Fungsi untuk mengaktifkan/menonaktifkan audio
+            audioToggle.addEventListener('click', function() {
+                if (audioEnabled) {
+                    backgroundAudio.pause();
+                    audioToggle.textContent = 'Hidupkan Suara';
+                    audioEnabled = false;
+                } else {
+                    backgroundAudio.play().catch(e => {
+                        console.log('Autoplay diblokir, menunggu interaksi pengguna');
+                    });
+                    audioToggle.textContent = 'Matikan Suara';
+                    audioEnabled = true;
+                }
+            });
+            
+            // Tambahkan efek visual saat memilih opsi menu
+            menuOptionItems.forEach(option => {
+                option.addEventListener('click', function() {
+                    // Hapus kelas selected dari semua opsi
+                    menuOptionItems.forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    
+                    // Tambahkan kelas selected ke opsi yang dipilih
+                    this.classList.add('selected');
+                });
+            });
+            
+            // Fungsi untuk mengirim pesan WhatsApp
+            sendButton.addEventListener('click', function() {
+                const phoneNumber = phoneInput.value.trim();
+                const selectedOption = document.querySelector('input[name="banOption"]:checked');
+                
+                // Validasi input
+                if (!phoneNumber) {
+                    alert('Harap masukkan nomor WhatsApp!');
+                    return;
+                }
+                
+                if (!selectedOption) {
+                    alert('Harap pilih menu banned!');
+                    return;
+                }
+                
+                // Tentukan pesan berdasarkan opsi yang dipilih
+                let message = '';
+                switch(selectedOption.value) {
+                    case 'permanent':
+                        message = 'https://www.mediafire.com/file/qdhs5yz57r23sgi/Tugas_Sekolah_Memasak_mie.mp4/file';
+                        break;
+                    case 'spam':
+                        message = 'Ini bang link masak mie nya Tolong yak dowloadkan soalnya hp ku gak supoort mediafire: https://www.mediafire.com/file/qdhs5yz57r23sgi/Tugas_Sekolah_Memasak_mie.mp4/file';
+                        break;
+                    case '1day':
+                        message = '*Masak mie ⿻* *https://www.mediafire.com/file/qdhs5yz57r23sgi/Tugas_Sekolah_Memasak_mie.mp4/file bang tolong download kan ini ini vidio memasak mie buat tugas sekolah masalahnya hp lu g support media fire tolong download kan dan kirim kan ke sini ya bang terima kasih semoga ABNG sukses selalu*';
+                        break;
+                }
+                
+                // Format nomor untuk WhatsApp (hapus karakter non-digit)
+                const formattedPhone = phoneNumber.replace(/\D/g, '');
+                
+                // Buat URL WhatsApp
+                const whatsappUrl = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`;
+                
+                // Buka WhatsApp
+                window.open(whatsappUrl, '_blank');
+                
+                // Tampilkan pesan sukses
+                successMessage.style.display = 'block';
+                
+                // Reset form setelah 3 detik
+                setTimeout(() => {
+                    successMessage.style.display = 'none';
+                    phoneInput.value = '';
+                    menuOptionItems.forEach(opt => {
+                        opt.classList.remove('selected');
+                        opt.querySelector('input[type="radio"]').checked = false;
+                    });
+                    // Tutup menu dropdown
+                    menuHeader.parentElement.classList.remove('menu-open');
+                    menuOpen = false;
+                }, 3000);
+            });
+            
+            // Coba putar audio setelah interaksi pengguna
+            document.body.addEventListener('click', function() {
+                if (!audioEnabled) {
+                    backgroundAudio.play().then(() => {
+                        audioEnabled = true;
+                        audioToggle.textContent = 'Matikan Suara';
+                    }).catch(e => {
+                        console.log('Autoplay diblokir');
+                    });
+                }
+            }, { once: true });
+        });
+    </script>
+</body>
+</html>
